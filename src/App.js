@@ -10,7 +10,9 @@ class App extends Component {
 
      this.state = {
        cities: [],
-      show: false
+      show: false,
+      timezone: 'Timezone',
+      summary: 'Add a new city.'
     };
   }
 
@@ -43,15 +45,40 @@ class App extends Component {
     }
   }
 
-fetchWeather = (e) => {
+getCoords = (ENDPOINT) => {
+  return request.get(ENDPOINT);
+}
+
+fetchWeather = (response) => {
+  const coords = response.body.results[0].geometry.location;
+
+const ENDPOINT = `https://api.darksky.net/forecast/8c6c8467512243aac21331fe2e8d328e/${ coords.lat }, ${ coords.lng }`;
+
+request
+  .get(ENDPOINT)
+  .then(response => {
+    this.setState({
+      timezone: response.body.timezone,
+      summary: response.body.currently.summary
+    });
+  });
+}
+
+fetchLocation = (e) => {
   e.preventDefault();
 
   const COUNTRY = e.target.textContent;
   const ENDPOINT = `https://maps.googleapis.com/maps/api/geocode/json?address=${ COUNTRY }`;
 
-  request
-   .get(ENDPOINT)
-   .then(response => console.log(response.body.results[0].geometry.location));
+  this
+    .getCoords(ENDPOINT)
+    .then(this.fetchWeather)
+    .catch(error => {
+      this.setState({
+        timezone: 'Timezone',
+        summary: 'Something went wrong. Try again.'
+      });
+    });
 }
 
   render() {
@@ -67,7 +94,7 @@ fetchWeather = (e) => {
             <h1 className='app__title'>All countries</h1>
             { this.state.cities.map(city => {
               return <a
-                        onClick={ this.fetchWeather }
+                        onClick={ this.fetchLocation }
                         key={ city.id }
                         href='#'
                         className='app__country'
@@ -79,7 +106,8 @@ fetchWeather = (e) => {
           </aside>
           <section className='app__view'>
             <div>
-              Summary
+              <h3>{ this.state.timezone }</h3>
+              <p>{ this.state.summary }</p>
             </div>
           </section>
         </div>
