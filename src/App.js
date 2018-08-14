@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './App.css';
 
-import request from 'superagent'; // npm install --save superagent
+import request from 'superagent';
 
 class App extends Component {
   constructor() {
@@ -43,6 +43,17 @@ class App extends Component {
     }
   }
 
+fetchWeather = (e) => {
+  e.preventDefault();
+
+  const COUNTRY = e.target.textContent;
+  const ENDPOINT = `https://maps.googleapis.com/maps/api/geocode/json?address=${ COUNTRY }`;
+
+  request
+   .get(ENDPOINT)
+   .then(response => console.log(response.body.results[0].geometry.location));
+}
+
   render() {
     return (
       <div className='app'>
@@ -55,7 +66,14 @@ class App extends Component {
           <aside className='app__aside'>
             <h1 className='app__title'>All countries</h1>
             { this.state.cities.map(city => {
-              return <a key={ city.id } href='#' className='app__country'>{ city.name }</a>
+              return <a
+                        onClick={ this.fetchWeather }
+                        key={ city.id }
+                        href='#'
+                        className='app__country'
+                      >
+                        { city.name }
+                      </a>
             }) }
             { this.state.show && <input onKeyUp={ this.addCity } autoFocus type='text' placeholder='Location' className='app__input' /> }
           </aside>
