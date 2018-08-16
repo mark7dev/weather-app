@@ -9,10 +9,14 @@ class App extends Component {
     super();
 
      this.state = {
-       cities: [],
+       cities: [{
+         id: 1,
+         name: 'France'
+        }],
       show: false,
       timezone: 'Timezone',
-      summary: 'Add a new city.'
+      summary: 'Add a new city.',
+      weekly: []
     };
   }
 
@@ -57,7 +61,9 @@ const ENDPOINT = `https://api.darksky.net/forecast/8c6c8467512243aac21331fe2e8d3
 request
   .get(ENDPOINT)
   .then(response => {
+    console.log(response.body.daily.data);
     this.setState({
+      weekly: response.body.daily.data,
       timezone: response.body.timezone,
       summary: response.body.currently.summary
     });
@@ -79,6 +85,20 @@ fetchLocation = (e) => {
         summary: 'Something went wrong. Try again.'
       });
     });
+}
+
+renderIcon = iconName => {
+  const icons = {
+    'clear-day': 'https://www.amcharts.com/wp-content/themes/amcharts2/css/img/icons/weather/animated/day.svg',
+    'partly-cloudy-day': 'https://www.amcharts.com/wp-content/themes/amcharts2/css/img/icons/weather/animated/cloudy-day-1.svg',
+    'partly-cloudy-night': 'https://www.amcharts.com/wp-content/themes/amcharts2/css/img/icons/weather/animated/cloudy-night-1.svg',
+    'rain': 'https://www.amcharts.com/wp-content/themes/amcharts2/css/img/icons/weather/animated/rainy-1.svg',
+    'cloudy': 'https://www.amcharts.com/wp-content/themes/amcharts2/css/img/icons/weather/animated/cloudy.svg',
+    'fog': 'https://raw.githubusercontent.com/rickellis/SVG-Weather-Icons/7824dc80e8b35f651186a63c98c861e470deeed6/DarkSky/fog.svg'
+  };
+
+
+   return <img src={ icons[iconName] } />
 }
 
   render() {
@@ -108,6 +128,22 @@ fetchLocation = (e) => {
             <div>
               <h3>{ this.state.timezone }</h3>
               <p>{ this.state.summary }</p>
+              <h5>Weekly</h5>
+              <div className='week'>
+                { this.state.weekly.map(day => {
+                  return (
+                    <div className='day'>
+                      <div className='day__icon'>
+                        { this.renderIcon(day.icon) }
+                      </div>
+                      <p className='day__temp'>{ new Date(day.sunriseTime * 1000).toLocaleString() }</p>
+                      <p className='day__temp'>{ new Date(day.sunsetTime * 1000).toLocaleString() }</p>
+                      <p className='day__wind'>{ day.windSpeed } m/s</p>
+                      <p className='day__press'>{ day.pressure } hpa</p>
+                    </div>
+                  );
+                }) }
+              </div>
             </div>
           </section>
         </div>
