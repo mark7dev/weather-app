@@ -101,6 +101,10 @@ renderIcon = iconName => {
    return <img src={ icons[iconName] } />
 }
 
+dateToString = date => {
+  return new Date(date * 1000).toLocaleString();
+}
+
   render() {
     return (
       <div className='app'>
@@ -136,8 +140,8 @@ renderIcon = iconName => {
                       <div className='day__icon'>
                         { this.renderIcon(day.icon) }
                       </div>
-                      <p className='day__temp'>{ new Date(day.sunriseTime * 1000).toLocaleString() }</p>
-                      <p className='day__temp'>{ new Date(day.sunsetTime * 1000).toLocaleString() }</p>
+                      <p className='day__temp'>{ this.dateToString(day.sunriseTime) }</p>
+                      <p className='day__temp'>{ this.dateToString(day.sunsetTime) }</p>
                       <p className='day__wind'>{ day.windSpeed } m/s</p>
                       <p className='day__press'>{ day.pressure } hpa</p>
                     </div>
