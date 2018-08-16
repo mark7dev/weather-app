@@ -4,6 +4,13 @@ import './App.css';
 
 import request from 'superagent';
 
+import Home from './components/Home';
+import About from './components/About';
+import Terms from './components/Terms';
+import Country from './components/Country';
+
+import { Switch, Route, Link } from 'react-router-dom';
+
 class App extends Component {
   constructor() {
     super();
@@ -112,66 +119,34 @@ dateToString = date => {
           <button onClick={ this.showInput } className='app__add'>
             <i className='fa fa-plus-circle' /> New city
           </button>
+          <div>
+            <Link to='/about'>About</Link>
+            <Link to='/terms'>Terms</Link>
+            <Link to='/terms'>Home</Link>
+          </div>
         </header>
         <div className='grid'>
           <aside className='app__aside'>
             <h1 className='app__title'>All countries</h1>
             { this.state.cities.map(city => {
-              return <a
-                        onClick={ this.fetchLocation }
+              return  <Link
                         key={ city.id }
-                        href='#'
                         className='app__country'
+                        to={ `/country/${ city.name.toLowerCase() }` }
                       >
                         { city.name }
-                      </a>
+                      </Link>
             }) }
             { this.state.show && <input onKeyUp={ this.addCity } autoFocus type='text' placeholder='Location' className='app__input' /> }
           </aside>
           <section className='app__view'>
             <div>
-              <h3>{ this.state.timezone }</h3>
-              <p>{ this.state.summary }</p>
-              <h5>Weekly</h5>
-              <div className='week'>
-                { this.state.weekly.map(day => {
-                  return (
-                    <div className='day'>
-                      <div className='day__icon'>
-                        { this.renderIcon(day.icon) }
-                      </div>
-                      <p className='day__temp'>{ this.dateToString(day.sunriseTime) }</p>
-                      <p className='day__temp'>{ this.dateToString(day.sunsetTime) }</p>
-                      <p className='day__wind'>{ day.windSpeed } m/s</p>
-                      <p className='day__press'>{ day.pressure } hpa</p>
-                    </div>
-                  );
-                }) }
-              </div>
-              <h5>Hourly</h5>
-              <table className=''>
-                <thead>
-                  <tr>
-                    <th>{ new Date().toLocaleString().split(',')[0] }</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  { this.state.hourly.map((hour, index) => {
-                    return (
-                      <tr>
-                        <td>
-                          <small>{ index + 1 }</small>
-                          <strong> { new Date(hour.time * 1000).getHours() }:00</strong>,
-                          { hour.temperature } ºF,
-                          <em>{ hour.summary.toLowerCase() }</em>,
-                          { hour.windSpeed } m/s,
-                          { hour.pressure }
-                        </td>
-                      </tr>
-                    );
-                  }) }
-                </tbody>
-              </table>
+              <Switch>
+                <Route exact path='/' component={ Home } />
+                <Route exact path='/about' component={ About } />
+                <Route exact path='/terms' component={ Terms } />
+                <Route path='/country/:cityName' component={ Country } />
+              </Switch>
             </div>
           </section>
         </div>

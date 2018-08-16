@@ -6,6 +6,12 @@
   background-color: white;
   border-bottom: 1px solid #edeef2;
   padding: 7px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app__header > div a {
+  margin-right: 5px;
 }
 
 .app__add {
